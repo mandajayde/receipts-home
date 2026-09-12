@@ -9,7 +9,11 @@ changed=subprocess.run(['git','diff','--name-only',f'{base}...HEAD','--','receip
 bad=[]
 for p in changed:
     old=subprocess.run(['git','show',f'{base}:{p}'],capture_output=True,text=True)
-    if old.returncode!=0: continue  # new file
+    if old.returncode!=0:
+        try: n=json.load(open(p))
+        except Exception as ex: bad.append(f'{p}: cannot read ({ex})'); continue
+        if n.get('referee') or n.get('accepted'): bad.append(f'{p}: a new receipt must arrive unaccepted; acceptance is recorded only by the referee workflow when the person replies on the issue')
+        continue  # new file
     try: o=json.loads(old.stdout); n=json.load(open(p))
     except Exception as ex: bad.append(f'{p}: cannot compare ({ex})'); continue
     for k in PROTECTED:
