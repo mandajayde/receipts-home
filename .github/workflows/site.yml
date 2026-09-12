@@ -1,4 +1,5 @@
 name: site
+# Pages source must be set to GitHub Actions in the repository settings, or the deploy step fails until it is.
 on:
   push:
     branches: [main]
